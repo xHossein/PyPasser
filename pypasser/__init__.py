@@ -1,9 +1,11 @@
 from .exceptions import RecaptchaTokenNotFound, RecaptchaResponseNotFound
 from .session import Session
+from .structs import CustomSite
 from .constants import POST_DATA
 from .utils import extractor
 
 import re
+from typing import Union
 
 class reCaptchaBypasser:
     """
@@ -13,17 +15,20 @@ class reCaptchaBypasser:
     
     Attributes
     ----------
-    site: str
-        site from `pypasser.sites`.
+    site: str or CustomSite
+        site from `pypasser.sites` or CustomSite object from `pypasser.structs`.
 
     """
-    def __new__(cls, site: str, timeout: int = 20) -> str:
+    def __new__(cls, site: Union[str, CustomSite], timeout: int = 20) -> str:
 
         cls.session = Session(timeout)
         
-        data = extractor(site)
+        if type(site) == str:
+            data = extractor(site)
+        else:
+            data = site.dict()
         
-        # Get recaptcha token.
+        # Gets recaptcha token.
         token = cls.get_recaptcha_token(data['endpoint'],
                                         data['params']
                                         )
@@ -32,7 +37,7 @@ class reCaptchaBypasser:
         params = dict(pair.split('=') for pair in data['params'].split('&'))
         
         
-        # Get recaptcha response.
+        # Gets recaptcha response.
         post_data = POST_DATA.format(params["v"], token,
                                      params["k"], params["co"])
         
