@@ -1,15 +1,21 @@
-from typing import Dict, Union
+from .structs import Proxy
 import requests
 from .constants import BASE_URL, BASE_HEADERS
 from .exceptions import ConnectionError
 
+from typing import Dict, Union
 
 class Session():
-    def __init__(self, timeout: int = 20) -> None:
+    def __init__(self, timeout: Union[int, float],
+                proxy: Union[Proxy, Dict] = None
+                ) -> None:
         
         self.session = requests.Session()
         self.session.headers = BASE_HEADERS
         self.timeout = timeout
+        
+        if proxy:
+            self.session.proxies = proxy.dict() if type(proxy) == Proxy else proxy
 
     def send_request(self, endpoint: str,
                      data: Union[str, Dict] = None,

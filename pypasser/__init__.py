@@ -1,11 +1,11 @@
 from .exceptions import RecaptchaTokenNotFound, RecaptchaResponseNotFound
 from .session import Session
-from .structs import CustomSite
+from .structs import CustomSite, Proxy
 from .constants import POST_DATA
 from .utils import extractor
 
 import re
-from typing import Union
+from typing import Dict, Union
 
 class reCaptchaBypasser:
     """
@@ -17,11 +17,18 @@ class reCaptchaBypasser:
     ----------
     site: str or CustomSite
         site from `pypasser.sites` or CustomSite object from `pypasser.structs`.
+        
+    proxy [Optional]: Proxy or Dict,
+        Proxy object from `pypasser.structs` or dict (for requests library).
 
+    timeout [Optional]: int or float,
+        the number of seconds to wait on a response before timing out.
     """
-    def __new__(cls, site: Union[str, CustomSite], timeout: int = 20) -> str:
+    def __new__(cls, site: Union[str, CustomSite],
+                proxy: Union[Proxy, Dict] = None,
+                timeout: Union[int, float] = 20) -> str:
 
-        cls.session = Session(timeout)
+        cls.session = Session(timeout, proxy)
         
         if type(site) == str:
             data = extractor(site)
