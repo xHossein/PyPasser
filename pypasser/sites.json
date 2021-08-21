@@ -1,0 +1,42 @@
+{
+        "spotify.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6LfCVLAUAAAAALFwwRnnCJ12DalriUGbj8FW_J39&co=aHR0cHM6Ly9hY2NvdW50cy5zcG90aWZ5LmNvbTo0NDM.&hl=en&v=r8jtf1oixV0IGff4hgB4EzDF&size=invisible&cb=tin4zz39kyk6"
+        },
+        "maktabkhooneh.org": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6LcE-NAZAAAAANzz4-ai_pMkuXnpCXFJ6zqsQIHf&co=aHR0cHM6Ly9tYWt0YWJraG9vbmVoLm9yZzo0NDM.&hl=fa&v=bfvuz6tShG5aoZp4K4zPVf5t&size=invisible&sa=login&cb=5wc9ld72y29u"
+        },
+        "parscoders.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6Lecz7IZAAAAAHnE36_OsrGZHecz6O_bpOf8PveA&co=aHR0cHM6Ly9wYXJzY29kZXJzLmNvbTo0NDM.&hl=en&v=ecapuzyywmdXQ5gJHS3JQiXe&size=invisible&cb=28f7vpqvtbjl"
+        },
+        "grammarly.com": {
+                "endpoint": "enterprise",
+                "params": "ar=1&k=6LdSYv0UAAAAAF5PhF0Z1rK7QiupkyRBy1ebiFc4&co=aHR0cHM6Ly93d3cuZ3JhbW1hcmx5LmNvbTo0NDM.&hl=en&v=ecapuzyywmdXQ5gJHS3JQiXe&size=invisible&cb=mzddp51jws31"
+        },
+        "netflix.com": {
+                "endpoint": "enterprise",
+                "params": "ar=1&k=6Lf8hrcUAAAAAIpQAFW2VFjtiYnThOjZOA5xvLyR&co=aHR0cHM6Ly93d3cubmV0ZmxpeC5jb206NDQz&hl=en&v=RDRwZ7RcROX_wCxEJ01WeqEX&size=invisible&cb=jlj24mfk0aqt"
+        },
+        "adobe.com": {
+                "endpoint": "enterprise",
+                "params": "ar=1&k=6LcGE-4ZAAAAAG2tFdbr7QqpimWAPqhLjI8_O_69&co=aHR0cHM6Ly9hdXRoLnNlcnZpY2VzLmFkb2JlLmNvbTo0NDM.&hl=en&v=ecapuzyywmdXQ5gJHS3JQiXe&size=invisible&cb=r55icdpyxfc3"
+        },
+        "vape.gg": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6LfjzbQUAAAAAPKZqfNcKQ6ZxSZ_9dyV1LMaeex9&co=aHR0cHM6Ly93d3cudmFwZS5nZzo0NDM.&hl=en&v=JF4U2g-hvLrBJ_UxdbKj92gN&size=invisible&cb=2d1iroe1dhy4"
+        },
+        "uphold.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6Le1Iy8bAAAAAMdNji-LyayNE4R55KpM8eGxRbYS&co=aHR0cHM6Ly93YWxsZXQudXBob2xkLmNvbTo0NDM.&hl=en&v=Eyd0Dt8h04h7r-D86uAD1JP-&size=invisible&cb=adp92bli2pz2"
+        },
+        "iqmining.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6LdDuo8UAAAAAD0TxZsm4wHVd39bMrNm0qNl4Egc&co=aHR0cHM6Ly9jbGllbnQuaXFtaW5pbmcuY29tOjQ0Mw..&hl=en&v=Eyd0Dt8h04h7r-D86uAD1JP-&size=invisible&cb=g2oj789797un"
+        },
+        "snapchat.com": {
+                "endpoint": "enterprise",
+                "params": "ar=1&k=6LezjdAZAAAAAD1FaW81QpkkplPNzCNnIOU5anHw&co=aHR0cHM6Ly9hY2NvdW50cy5zbmFwY2hhdC5jb206NDQz&hl=en&v=Eyd0Dt8h04h7r-D86uAD1JP-&size=invisible&badge=inline&cb=v9cs2c4sdrz1"
+        }
+}
