@@ -11,7 +11,7 @@ requirements = [
 
 setup(
     name='PyPasser',
-    version='0.0.1',
+    version='0.0.2',
     author='xHossein',
     url='https://github.com/xHossein/PyPasser',
     install_requires=requirements,
