@@ -2,7 +2,6 @@
 **PyPasser** is a Python library for bypassing reCaptchaV3 only by sending 2 requests. In 1st request, gets token of captcha and in 2nd request, gets `rresp` by params and token which gotted in previous step.
 
 Support Python >= 3.7
-
 # Installation
 ### From PyPI
 ```
@@ -12,12 +11,12 @@ pip install PyPasser
 ```
 pip install git+https://github.com/xHossein/PyPasser@master
 ```
-
+&nbsp;
 # Usage
 ## **Option 1: Use the pre-added sites**
 see pre-added sites [here](https://github.com/xHossein/PyPasser/blob/master/pypasser/sites.py).
 
-```bash
+```python
 from pypasser import reCaptchaBypasser
 from pypasser.sites import spotify_com, snapchat_com
 
@@ -30,7 +29,7 @@ reCaptcha_response = reCaptchaBypasser(snapchat_com)
 ## use this response in your requests ...
 
 ```
-
+&nbsp;
 ## **Option 2: Use `CustomSite` for unadded sites**
 To use `CustomSite`, first you must find `endpoint` and `params` of anchor URL.
 - Open inspect-element on your browser.
@@ -41,7 +40,7 @@ To use `CustomSite`, first you must find `endpoint` and `params` of anchor URL.
   and **params** is `ar=1&k=6LfCVLAUAAAAFwwRnnCFW_J39&co=aHR...`.
 
 
-```bash
+```python
 from pypasser import reCaptchaBypasser
 from pypasser.structs import CustomSite
 
@@ -49,10 +48,10 @@ config = CustomSite('endpoint', 'params')
 reCaptcha_response = reCaptchaBypasser(config)
 ## use this response in your requests ...
 ```
-
+&nbsp;
 ## **Use proxy**
 
-```bash
+```python
 from pypasser import reCaptchaBypasser
 from pypasser.sites import spotify_com
 from pypasser.structs import Proxy
@@ -68,24 +67,24 @@ reCaptcha_response = reCaptchaBypasser(spotify_com, proxy)
 _also you can configure it as Dict._
 
 
-```BASH
+```python
 
 proxy = {"http": "http://HOST:PORT",
          "https": "http://HOST:PORT"}
 
 reCaptcha_response = reCaptchaBypasser(spotify_com, proxy)
 ```
-
-## **Timeout**
+&nbsp;
+## **Set timeout**
 Default timeout is `20 seconds` but you can change the amount like this:
 
-```bash
+```python
 from pypasser import reCaptchaBypasser
 from pypasser.sites import spotify_com
 
 reCaptcha_response = reCaptchaBypasser(spotify_com, timeout = 10)
 ```
-
+&nbsp;
 # Exception
 Exception | Description
 ----------|------------
