@@ -40,10 +40,8 @@ class reCaptchaBypasser:
                                         data['params']
                                         )
         
-        # Converts string params to Dict.
         params = dict(pair.split('=') for pair in data['params'].split('&'))
-        
-        
+           
         # Gets recaptcha response.
         post_data = POST_DATA.format(params["v"], token,
                                      params["k"], params["co"])
@@ -81,6 +79,6 @@ class reCaptchaBypasser:
         
         results = re.findall(r'"rresp","(.*?)"', response.text)
         if not results:
-            RecaptchaResponseNotFound()
+            raise RecaptchaResponseNotFound()
         
         return results[0]

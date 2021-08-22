@@ -5,15 +5,15 @@
         },
         "maktabkhooneh.org": {
                 "endpoint": "api2",
-                "params": "ar=1&k=6LcE-NAZAAAAANzz4-ai_pMkuXnpCXFJ6zqsQIHf&co=aHR0cHM6Ly9tYWt0YWJraG9vbmVoLm9yZzo0NDM.&hl=fa&v=bfvuz6tShG5aoZp4K4zPVf5t&size=invisible&sa=login&cb=5wc9ld72y29u"
+                "params": "ar=1&k=6LcE-NAZAAAAANzz4-ai_pMkuXnpCXFJ6zqsQIHf&co=aHR0cHM6Ly9tYWt0YWJraG9vbmVoLm9yZzo0NDM.&hl=fa&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&sa=login&cb=5wc9ld72y29u"
         },
         "parscoders.com": {
                 "endpoint": "api2",
-                "params": "ar=1&k=6Lecz7IZAAAAAHnE36_OsrGZHecz6O_bpOf8PveA&co=aHR0cHM6Ly9wYXJzY29kZXJzLmNvbTo0NDM.&hl=en&v=ecapuzyywmdXQ5gJHS3JQiXe&size=invisible&cb=28f7vpqvtbjl"
+                "params": "ar=1&k=6Lecz7IZAAAAAHnE36_OsrGZHecz6O_bpOf8PveA&co=aHR0cHM6Ly9wYXJzY29kZXJzLmNvbTo0NDM.&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=28f7vpqvtbjl"
         },
         "grammarly.com": {
                 "endpoint": "enterprise",
-                "params": "ar=1&k=6LdSYv0UAAAAAF5PhF0Z1rK7QiupkyRBy1ebiFc4&co=aHR0cHM6Ly93d3cuZ3JhbW1hcmx5LmNvbTo0NDM.&hl=en&v=ecapuzyywmdXQ5gJHS3JQiXe&size=invisible&cb=mzddp51jws31"
+                "params": "ar=1&k=6LdSYv0UAAAAAF5PhF0Z1rK7QiupkyRBy1ebiFc4&co=aHR0cHM6Ly93d3cuZ3JhbW1hcmx5LmNvbTo0NDM.&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=mzddp51jws31"
         },
         "netflix.com": {
                 "endpoint": "enterprise",
@@ -21,7 +21,7 @@
         },
         "adobe.com": {
                 "endpoint": "enterprise",
-                "params": "ar=1&k=6LcGE-4ZAAAAAG2tFdbr7QqpimWAPqhLjI8_O_69&co=aHR0cHM6Ly9hdXRoLnNlcnZpY2VzLmFkb2JlLmNvbTo0NDM.&hl=en&v=ecapuzyywmdXQ5gJHS3JQiXe&size=invisible&cb=r55icdpyxfc3"
+                "params": "ar=1&k=6LcGE-4ZAAAAAG2tFdbr7QqpimWAPqhLjI8_O_69&co=aHR0cHM6Ly9hdXRoLnNlcnZpY2VzLmFkb2JlLmNvbTo0NDM.&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=r55icdpyxfc3"
         },
         "vape.gg": {
                 "endpoint": "api2",
@@ -29,14 +29,38 @@
         },
         "uphold.com": {
                 "endpoint": "api2",
-                "params": "ar=1&k=6Le1Iy8bAAAAAMdNji-LyayNE4R55KpM8eGxRbYS&co=aHR0cHM6Ly93YWxsZXQudXBob2xkLmNvbTo0NDM.&hl=en&v=Eyd0Dt8h04h7r-D86uAD1JP-&size=invisible&cb=adp92bli2pz2"
+                "params": "ar=1&k=6Le1Iy8bAAAAAMdNji-LyayNE4R55KpM8eGxRbYS&co=aHR0cHM6Ly93YWxsZXQudXBob2xkLmNvbTo0NDM.&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=adp92bli2pz2"
         },
         "iqmining.com": {
                 "endpoint": "api2",
-                "params": "ar=1&k=6LdDuo8UAAAAAD0TxZsm4wHVd39bMrNm0qNl4Egc&co=aHR0cHM6Ly9jbGllbnQuaXFtaW5pbmcuY29tOjQ0Mw..&hl=en&v=Eyd0Dt8h04h7r-D86uAD1JP-&size=invisible&cb=g2oj789797un"
+                "params": "ar=1&k=6LdDuo8UAAAAAD0TxZsm4wHVd39bMrNm0qNl4Egc&co=aHR0cHM6Ly9jbGllbnQuaXFtaW5pbmcuY29tOjQ0Mw..&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=g2oj789797un"
         },
         "snapchat.com": {
                 "endpoint": "enterprise",
-                "params": "ar=1&k=6LezjdAZAAAAAD1FaW81QpkkplPNzCNnIOU5anHw&co=aHR0cHM6Ly9hY2NvdW50cy5zbmFwY2hhdC5jb206NDQz&hl=en&v=Eyd0Dt8h04h7r-D86uAD1JP-&size=invisible&badge=inline&cb=v9cs2c4sdrz1"
+                "params": "ar=1&k=6LezjdAZAAAAAD1FaW81QpkkplPNzCNnIOU5anHw&co=aHR0cHM6Ly9hY2NvdW50cy5zbmFwY2hhdC5jb206NDQz&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&badge=inline&cb=v9cs2c4sdrz1"
+        },
+        "scop.io": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6Lfst9gUAAAAACHnl7Cdhl6HarqgC4z_lflMBrAE&co=aHR0cHM6Ly9zY29wLmlvOjQ0Mw..&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=vsans4jpsb9y"
+        },
+        "eyeem.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6Ld-esEUAAAAAAB4MnNWlhMzqOgBbU3uaVbij-2c&co=aHR0cHM6Ly93d3cuZXllZW0uY29tOjQ0Mw..&hl=en&type=image&v=mrdLhN7MywkJAAbzddTIjTaM&theme=light&size=invisible&badge=bottomright&cb=yg8ntjh72mff"
+        },
+        "jollychic.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6Le97ZMUAAAAAKzGfyqrHTwNixZYwEnOcoi72qF2&co=aHR0cHM6Ly93d3cuam9sbHljaGljLmNvbTo0NDM.&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=xajcx1hofxuo"
+        },
+        "flyingresearch.net": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6LctUIEaAAAAAL9G9RfVoJl8eSdrPqzfrjQI2VP9&co=aHR0cHM6Ly9mbHlpbmdyZXNlYXJjaC5uZXQ6NDQz&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=4woq8shpmnr2"
+        },
+        "onlyfans.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6LffpXsUAAAAAClHugLBD8pUiaayszY6RUizIubg&co=aHR0cHM6Ly9vbmx5ZmFucy5jb206NDQz&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=dwf5yxnqscs0"
+        },
+        "playerzpot.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6LeV-ZwaAAAAAEYC3BXfRj0wWtlDYVwDKj6w_yg9&co=aHR0cHM6Ly9mYW50YXN5Y3JpY2tldC5wbGF5ZXJ6cG90LmNvbTo0NDM.&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=rwgwqjqniyij"
         }
 }
