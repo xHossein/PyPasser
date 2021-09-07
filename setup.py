@@ -11,7 +11,7 @@ requirements = [
 
 setup(
     name='PyPasser',
-    version='0.0.3',
+    version='0.0.31',
     author='xHossein',
     license='MIT',
     url='https://github.com/xHossein/PyPasser',
