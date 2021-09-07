@@ -62,5 +62,41 @@
         "playerzpot.com": {
                 "endpoint": "api2",
                 "params": "ar=1&k=6LeV-ZwaAAAAAEYC3BXfRj0wWtlDYVwDKj6w_yg9&co=aHR0cHM6Ly9mYW50YXN5Y3JpY2tldC5wbGF5ZXJ6cG90LmNvbTo0NDM.&hl=en&v=mrdLhN7MywkJAAbzddTIjTaM&size=invisible&cb=rwgwqjqniyij"
+        },
+        "mym.fans": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6Le_QEcaAAAAADcKf0VFGkcTRIMu4vS0lY9FpOda&co=aHR0cHM6Ly9teW0uZmFuczo0NDM.&hl=fr&v=Iwg4ANhK7Iu8SHToSsE0E20K&size=invisible&cb=spgkmane2x3w"
+        },
+        "nutaku.net": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6LeYrHcUAAAAACfhNNf9zgmdglkcUMwfAkmMD-na&co=aHR0cHM6Ly93d3cubnV0YWt1Lm5ldDo0NDM.&hl=en&v=Q_rrUPkK1sXoHi4wbuDTgcQR&size=invisible&cb=gh7u5x5881ue"
+        },
+        "hlrlookup.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6Ld_5vwZAAAAAM_nm1jUH2EFDWop3FLBUUY2LWgN&co=aHR0cHM6Ly93d3cuaGxybG9va3VwLmNvbTo0NDM.&hl=en&v=tFhBvPrftr7Y91fo1S1ASkA6&size=invisible&cb=if10syd3tqn6"
+        },
+        "messengo.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6Lc3fGUUAAAAABsGz6_nupGOBRA-a9up9SxutUw-&co=aHR0cHM6Ly93d3cubWVzc2VuZ28uY29tOjQ0Mw..&hl=fr&v=JF4U2g-hvLrBJ_UxdbKj92gN&size=invisible&cb=4hgrpm21wtqq"
+        },
+        "auth.gg": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6LcbYOoUAAAAAP9ARIsUIL0dlcSE6bRuvlzb0FZM&co=aHR0cHM6Ly9hdXRoLmdnOjQ0Mw..&hl=en&v=tFhBvPrftr7Y91fo1S1ASkA6&size=invisible&cb=83jvvnwruqrm"
+        },
+        "educative.io": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6Lep1oQUAAAAACIOdLJ38dpdpsOghDv8XGjkGOro&co=aHR0cHM6Ly93d3cuZWR1Y2F0aXZlLmlvOjQ0Mw..&hl=en&v=tFhBvPrftr7Y91fo1S1ASkA6&size=invisible&cb=8gw7ww2ylo1l"
+        },
+        "footters.com": {
+                "endpoint": "api2",
+                "params": "ar=1&k=6LeN184ZAAAAAIFPu5kpLAMgrwrHYZQVrTQl1X_I&co=aHR0cHM6Ly9wbGF5LmZvb3R0ZXJzLmNvbTo0NDM.&hl=en&v=6OAif-f8nYV0qSFmq-D6Qssr&size=invisible&cb=21not95rrzu1"
+        },
+        "etsy.com": {
+                "endpoint": "enterprise",
+                "params": "ar=1&k=6Ldgkr0ZAAAAAGnf08YhMemepXW29Ux9rtJCcBD3&co=aHR0cHM6Ly93d3cuZXRzeS5jb206NDQz&hl=en&v=tFhBvPrftr7Y91fo1S1ASkA6&size=invisible&badge=none&cb=wespfy8hk2n"
+        },
+        "officedepot.com": {
+                "endpoint": "enterprise",
+                "params": "ar=1&k=6LdmZrMZAAAAAGzLpSIU6hjZp6hl10YlbHRI2EwI&co=aHR0cHM6Ly93d3cub2ZmaWNlZGVwb3QuY29tOjQ0Mw..&hl=en&v=tFhBvPrftr7Y91fo1S1ASkA6&size=invisible&cb=85x1xnl2eo0b"
         }
 }
