@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import enum
+import re
 
 @dataclass
 class CustomSite:
@@ -7,23 +8,21 @@ class CustomSite:
     Custom Site Structure
     ---------------
     
-    Object that holds endpoint and params.
+    Object that holds anchor url.
     
     
     Attributes
     ----------
-    endpoint: str,
-        check `anchor URL`, it should be `api2` or `enterprise`.
-    
-    params: str,
-        params of `anchor URL`.
+    anchor_url: str,
+        The anchor url
     
     """
-    endpoint: str
-    params: str
-
+    anchor_url: str
+    
     def dict(self):
-        return vars(self)
+        regex = '(?P<endpoint>[api2|enterprise]+)\/anchor\?(?P<params>.*)'
+        for match in re.finditer(regex, self.anchor_url):
+            return match.groupdict()
     
 class Type(enum.Enum):
     HTTPs   = 'https'
