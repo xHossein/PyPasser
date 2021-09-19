@@ -6,6 +6,13 @@
 Support Python >= 3.7
 
 &nbsp;
+
+**To Do**:
+- [ ] Bypass reCaptchaV2 (Selenium)
+- [ ] Add more speech-to-text engine
+- [ ] Calculate success rate on each engine (README.md)
+
+&nbsp;
 # Installation
 ### Install from PyPI
 ```
