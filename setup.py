@@ -11,7 +11,7 @@ requirements = [
 
 setup(
     name='PyPasser',
-    version='0.0.31',
+    version='0.0.4',
     author='xHossein',
     license='MIT',
     url='https://github.com/xHossein/PyPasser',
@@ -20,7 +20,7 @@ setup(
         'Bypass reCaptcha V3','Bypass-reCaptcha-V3','Bypass reCaptcha',
         'Bypass-reCaptcha','Google reCaptcha','Google-reCaptcha'
     ],
-    description='Bypass reCaptcha V3 only by sending requests.',
+    description='Bypass reCaptcha V3 only by sending HTTP requests.',
     long_description=README,
     long_description_content_type='text/markdown',
     packages=find_packages(),
@@ -33,6 +33,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
     ]
 )
