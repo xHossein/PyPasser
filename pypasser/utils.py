@@ -1,12 +1,14 @@
-import json
-import pathlib
-from .exceptions import SiteNotSupported
+import re
 
-FILE_PATH = pathlib.Path(__file__).parent.joinpath('sites.json')
-JSON_DATA = json.loads(open(FILE_PATH).read())
-
-def extractor(site: str) -> dict:
-    if site in JSON_DATA:    
-        return JSON_DATA[site]
+def parse_url(anchor_url: str) -> dict:
+    regex = '(?P<endpoint>[api2|enterprise]+)\/anchor\?(?P<params>.*)'
+    for match in re.finditer(regex, anchor_url):
+        return match.groupdict()
     
-    raise SiteNotSupported(site)
+def proxy_dict(type, host, port, username, password):
+    if username and password:
+        return {'http': f'{type.value.replace("https","http")}://{username}:{password}@{host}:{port}',
+                'https': f'{type.value}://{username}:{password}@{host}:{port}'}
+
+    return {"http": f"{type.value.replace('https','http')}://{host}:{port}",
+            "https": f"{type.value}://{host}:{port}"}

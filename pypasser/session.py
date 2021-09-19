@@ -1,17 +1,20 @@
 from .structs import Proxy
 import requests
-from .constants import BASE_URL, BASE_HEADERS
 from .exceptions import ConnectionError
 
 from typing import Dict, Union
 
 class Session():
-    def __init__(self, timeout: Union[int, float],
+    def __init__(self, 
+                base_url: str,
+                base_headers: dict,
+                timeout: Union[int, float],
                 proxy: Union[Proxy, Dict] = None
                 ) -> None:
         
+        self.base_url = base_url
         self.session = requests.Session()
-        self.session.headers = BASE_HEADERS
+        self.session.headers = base_headers
         self.timeout = timeout
         
         if proxy:
@@ -23,10 +26,10 @@ class Session():
         
         try:
             if data:
-                response = self.session.post(BASE_URL.format(endpoint),
+                response = self.session.post(self.base_url.format(endpoint),
                                             data=data, params=params, timeout=self.timeout)
             else:
-                response = self.session.get(BASE_URL.format(endpoint),
+                response = self.session.get(self.base_url.format(endpoint),
                                             params=params, timeout=self.timeout)
                 
         except requests.exceptions.RequestException:
