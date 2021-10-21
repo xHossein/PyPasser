@@ -1,10 +1,10 @@
 # PyPasser
 
-**PyPasser** is a Python library for bypassing reCaptchaV3 only by sending HTTP requests.
+**PyPasser** is a Python library for bypassing reCaptchaV3 only by sending HTTP requests and solving reCaptchaV2 using speech-to-text engine.
 
-🔴 This bypass does not work on all sites. Test on your target to find out.
+🔴 reCaptchaV3 bypass does not work on all sites. Test on your target to find out.
 
-Support Python >= 3.7
+🐍 Support Python >= 3.7
 
 # Installation
 
@@ -30,9 +30,8 @@ pip install git+https://github.com/xHossein/PyPasser@master
 
 &nbsp;
 
-# **Usage**
 
-## Bypass **reCaptchaV3**
+# Bypassing **reCaptchaV3**
 
 To bypass recaptcha v3, first you must find anchor URL.
 
@@ -62,7 +61,7 @@ Some good examples are [here](https://github.com/xHossein/PyPasser/tree/master/e
 
 &nbsp;
 
-## **Proxy**
+### **Proxy**
 
 ```python
 from pypasser import reCaptchaV3
@@ -89,7 +88,7 @@ reCaptcha_response = reCaptchaV3('ANCHOR URL', proxy)
 
 &nbsp;
 
-## **Timeout**
+### **Timeout**
 
 Default timeout is `20 seconds` but you can change the amount like this:
 
@@ -101,13 +100,55 @@ reCaptcha_response = reCaptchaV3('ANCHOR URL', timeout = 10)
 
 &nbsp;
 
+# Bypassing **reCaptchaV2**
+Before start using reCaptchaV2 solver, you must install the following requirements.
+### **Requirements** :
+- **PocketSphinx** (used as speech-to-text engine)
+- **ffmpeg** (used for audio format conversion)
+
+After installing requirements, you should pass your webdriver to reCaptchaV2 class then PyPasser tries to solve the reCaptcha V2 which is in current tab of browser.
+```python
+from pypasser import reCaptchaV2
+
+# Create an instance of webdriver and open the page has recaptcha v2
+# ...
+
+# pass the driver to reCaptchaV2
+is_checked = reCaptchaV2(driver_instance) # it returns bool
+
+```
+
+&nbsp;
+
+### **Arguments**
+**driver**: An instance of webdriver.\
+**Play**: Click on 'PLAY' button. [Default is True means it plays the audio].\
+**Attempts**: Maximum solving attempts for a recaptcha. [Default is 3 times].
+
+```python
+is_checked = reCaptchaV2(
+                    driver = driver_instance,
+                    play = False,
+                    attempts = 5
+                  )
+
+```
+
+
+See an example [here](https://github.com/xHossein/PyPasser/blob/master/examples/reCaptchaV2/demo.py).
+
+> Note that Google gonna blocks you if you try to solve many recaptcha via audio challenge. In this case PyPasser raises `IpBlock` exception.
+
+&nbsp;
+
 # Exception
 
-| Exception                 | Description                                                                                                   |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| ConnectionError           | Raised due to network connectivity-related issues.                                                            |
-| RecaptchaTokenNotFound    | Raised when couldn't find token due to wrong `anchor_url`.                                                  |
-| RecaptchaResponseNotFound | Raised when couldn't find reCaptcha response due to using**PyPasser** for site that hasn't reCaptchaV3. |
+| Exception | Bypass | Description |
+| ---------- | -------------- | --------------- |
+| ConnectionError | reCaptchaV3 | Raised due to network connectivity-related issues. |
+| RecaptchaTokenNotFound | reCaptchaV3 | Raised when couldn't find token due to wrong `anchor_url`. |
+| RecaptchaResponseNotFound | reCaptchaV3 | Raised when couldn't find reCaptcha response due to using **PyPasser** for site that hasn't reCaptchaV3. |
+| IpBlock | reCaptchaV2 | Raised due to solving many recaptcha via audio challenge. |
 
 &nbsp;
 
