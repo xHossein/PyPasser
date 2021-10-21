@@ -11,7 +11,7 @@ class reCaptchaV3:
     """
     reCaptchaV3 bypass
     -----------------
-    Bypass reCaptcha V3 only by sending requests.
+    Bypass reCaptcha V3 only by sending HTTP requests.
     
     Attributes
     ----------
@@ -24,13 +24,13 @@ class reCaptchaV3:
     timeout [Optional]: int or float,
         the number of seconds to wait on a response before timing out.
     """
-    def __new__(cls, anchor_url: str,
-                proxy: Union[Proxy, Dict] = None,
-                timeout: Union[int, float] = 20) -> str:
-
-        cls.session = Session(BASE_URL, BASE_HEADERS, timeout, proxy)
+    def __new__(cls, *args, **kwargs) -> str:
+        instance = super(reCaptchaV3, cls).__new__(cls)
+        instance.__init__(*args,**kwargs)
         
-        data = parse_url(anchor_url)
+        cls.session = Session(BASE_URL, BASE_HEADERS, instance.timeout, instance.proxy)
+        
+        data = parse_url(instance.anchor_url)
         
         # Gets recaptcha token.
         token = cls.get_recaptcha_token(data['endpoint'],
@@ -38,7 +38,7 @@ class reCaptchaV3:
                                         )
         
         params = dict(pair.split('=') for pair in data['params'].split('&'))
-           
+         
         # Gets recaptcha response.
         post_data = POST_DATA.format(params["v"], token,
                                      params["k"], params["co"])
@@ -50,7 +50,14 @@ class reCaptchaV3:
         
         return recaptcha_response
         
-                
+    def __init__(self, anchor_url: str,
+                proxy: Union[Proxy, Dict] = None,
+                timeout: Union[int, float] = 20):
+        
+        self.anchor_url = anchor_url
+        self.proxy = proxy
+        self.timeout = timeout
+                   
     def get_recaptcha_token(endpoint: str, params: str) -> str:
         """
         Sends GET request to `anchor URL` to get recaptcha token.
