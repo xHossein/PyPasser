@@ -8,3 +8,7 @@ class RecaptchaResponseNotFound(Exception):
         
 class ConnectionError(Exception):
     pass
+
+class IpBlock(Exception):
+    def __init__(self):
+        super().__init__('Too many tries for solving reCaptchaV2 using speech to text, take a break or change your ip.')
