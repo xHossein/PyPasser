@@ -1,7 +1,7 @@
-from .structs import Proxy
-import requests
-from .exceptions import ConnectionError
+from pypasser.structs import Proxy
+from pypasser.exceptions import ConnectionError
 
+import requests
 from typing import Dict, Union
 
 class Session():
