@@ -7,6 +7,17 @@
 🐍 Support Python >= 3.7
 
 # Installation
+### install FFMPEG
+
+### Windows
+```
+winget install ffmpeg
+```
+
+### Unix like systems
+```
+sudo apt install ffmpeg
+```
 
 ### Install from PyPI
 
