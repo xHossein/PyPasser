@@ -10,6 +10,7 @@ requirements = [
     'SpeechRecognition==3.8.1',
     'pydub==0.25.1',
     'selenium',
+    'pocketsphinx'
 ]
 
 setup(
