@@ -1,0 +1,88 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PyPasser"
+version = "1.0.0"
+description = "Python library for solving captchas (Google reCaptcha, Cloudflare Turnstile, Arvancloud ARCaptcha) and clearing anti-bot challenges (Cloudflare, ArvanCloud) via pure HTTP requests and browser automation."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "xHossein" }]
+keywords = [
+    "Bypass reCaptcha V3", "Bypass-reCaptcha-V3", "Bypass reCaptcha",
+    "Bypass-reCaptcha", "Bypass reCaptcha V2", "Bypass-reCaptcha-V2",
+    "Solve-reCaptcha-V2", "Google reCaptcha", "Google-reCaptcha",
+    "Bypass Turnstile", "Solve Turnstile", "Anti-bot", "Bypass Cloudflare",
+    "Bypass ArvanCloud", "Solve ARCaptcha",
+]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = [
+    "httpx[socks]>=0.27",
+]
+
+[project.optional-dependencies]
+# One extra per capability — install only what your target needs.
+browsers = [
+    "playwright>=1.40",
+]
+stealth = [
+    "patchright>=1.40",  # stealth Playwright fork — fewer V2 audio blocks
+    "camoufox[geoip]>=0.4",  # stealth Firefox
+]
+speech = [
+    "vosk>=0.3.45",
+    "imageio-ffmpeg>=0.4.9",
+    "pydub>=0.25",
+]
+vision = [
+    "pillow>=10.0",
+    "numpy>=1.24",
+]
+all = [
+    "PyPasser[browsers]",
+    "PyPasser[stealth]",
+    "PyPasser[speech]",
+    "PyPasser[vision]",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "build>=1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/xHossein/PyPasser"
+Documentation = "https://github.com/xHossein/PyPasser#readme"
+Repository = "https://github.com/xHossein/PyPasser"
+Issues = "https://github.com/xHossein/PyPasser/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+pypasser = ["py.typed"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
