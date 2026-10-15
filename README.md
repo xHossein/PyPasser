@@ -6,8 +6,10 @@
   </p>
   <p align="center">
     <a href="https://pypi.org/project/PyPasser/"><img src="https://img.shields.io/pypi/v/PyPasser?color=blue" alt="PyPI"></a>
-    <a href="https://pypi.org/project/PyPasser/"><img src="https://img.shields.io/pypi/pyversions/PyPasser" alt="Python"></a>
+    <img alt="Python Version from PEP 621 TOML" src="https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FxHossein%2FPyPasser%2Frefs%2Fheads%2Fmaster%2Fpyproject.toml">
+    <img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/pypasser">
     <a href="https://github.com/xHossein/PyPasser/blob/master/LICENSE"><img src="https://img.shields.io/github/license/xHossein/PyPasser" alt="License"></a>
+    <img alt="PyPI Status" src="https://img.shields.io/pypi/status/pypasser">
   </p>
 </p>
 
