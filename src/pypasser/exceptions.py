@@ -75,3 +75,15 @@ class ARCaptchaBlocked(ARCaptchaError):
 
 class ARCaptchaSolveFailed(ARCaptchaError):
     """The challenge could not be solved within the attempt budget."""
+
+
+class GeeTestError(PyPasserError):
+    """Base class for GeeTest solving errors."""
+
+
+class GeeTestSolveFailed(GeeTestError):
+    """The GeeTest challenge could not be solved within the attempt budget."""
+
+
+class RequestRateLimited(RequestFailed):
+    """Every GeeTest mirror answered 429/503 instead of serving the request."""

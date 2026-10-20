@@ -24,12 +24,15 @@ import httpx
 
 from pypasser.antibot import arvancloud, cloudflare
 from pypasser.antibot.arvancloud.challenge import is_challenge
-from pypasser.captcha import arcaptcha, recaptcha, turnstile
+from pypasser.captcha import arcaptcha, geetest, recaptcha, turnstile
 
 BASE = "https://2captcha.com/demo"
 VERIFY_URL = "https://2captcha.com/api/v1/captcha-demo/recaptcha/verify"
 ENTERPRISE_VERIFY_URL = "https://2captcha.com/api/v1/captcha-demo/recaptcha-enterprise/verify"
 TURNSTILE_VERIFY_URL = "https://2captcha.com/api/v1/captcha-demo/cloudflare-turnstile/verify"
+
+# GeeTest demo id; it serves every supported risk_type on request.
+GEETEST_ID = "54088bb07d2df3c46b79f80300b0abbe"
 VERIFY_HEADERS = {
     "accept": "*/*",
     "content-type": "application/json",
@@ -58,6 +61,7 @@ class Target:
     verify_url: str = ""
     token_field: str = "answer"
     opens_popup: bool = False
+    risk_type: str = ""
 
     def __post_init__(self) -> None:
         if not self.runner_key:
@@ -97,6 +101,27 @@ TARGETS: list[Target] = [
            site_key="d6ggpvy684", domain="demo.arcaptcha.co"),
     Target("arcaptcha-classic", "ARCaptcha 9-grid image (voice)", "arcaptcha", "arcaptcha",
            site_key="vm6spkx59m", domain="arcaptcha.co"),
+
+    Target("geetest-auto", "GeeTest V4 auto-detect", "geetest", "geetest",
+           site_key=GEETEST_ID),
+    Target("geetest-slide", "GeeTest V4 slide", "geetest", "geetest",
+           site_key=GEETEST_ID, risk_type="slide"),
+    Target("geetest-ai", "GeeTest V4 ai", "geetest", "geetest",
+           site_key=GEETEST_ID, risk_type="ai"),
+    Target("geetest-winlinze", "GeeTest V4 winlinze", "geetest", "geetest",
+           site_key=GEETEST_ID, risk_type="winlinze"),
+    Target("geetest-match", "GeeTest V4 match", "geetest", "geetest",
+           site_key=GEETEST_ID, risk_type="match"),
+    Target("geetest-nine", "GeeTest V4 nine (voice)", "geetest", "geetest",
+           site_key=GEETEST_ID, risk_type="nine"),
+    Target("geetest-icon", "GeeTest V4 icon (voice)", "geetest", "geetest",
+           site_key=GEETEST_ID, risk_type="icon"),
+    Target("geetest-svg-icon", "GeeTest V4 svg_icon", "geetest", "geetest",
+           site_key=GEETEST_ID, risk_type="svg_icon"),
+    Target("geetest-voice", "GeeTest V4 voice", "geetest", "geetest",
+           site_key=GEETEST_ID, risk_type="voice"),
+    Target("geetest-invisible-bind", "GeeTest V4 invisible-bind (ai)",
+           "geetest", "geetest", site_key="99b142aaece96330d0f3ffb565ffb3ef"),
 ]
 
 GROUPS = {
@@ -104,6 +129,7 @@ GROUPS = {
     "cloudflare": [t.slug for t in TARGETS if t.group == "cloudflare"],
     "arvancloud": [t.slug for t in TARGETS if t.group == "arvancloud"],
     "arcaptcha": [t.slug for t in TARGETS if t.group == "arcaptcha"],
+    "geetest": [t.slug for t in TARGETS if t.group == "geetest"],
     "antibots": [t.slug for t in TARGETS
                  if t.runner_key == "interstitial" or t.group == "arvancloud"],
 }
@@ -276,6 +302,21 @@ def run_arcaptcha(_page: Any, target: Target) -> tuple[bool, str, float]:
     return True, "accepted", bypass_s
 
 
+def run_geetest(_page: Any, target: Target) -> tuple[bool, str, float]:
+    t0 = time.monotonic()
+    result = geetest.v4.solve(
+        target.site_key, risk_type=target.risk_type or "auto", attempts=1
+    )
+    bypass_s = time.monotonic() - t0
+
+    if not result.is_solved:
+        return False, "no token", bypass_s
+    seccode = json.loads(result.response_token)
+    ok = bool(seccode.get("pass_token") and seccode.get("captcha_output"))
+    detail = f"token={str(seccode.get('pass_token'))[:8]}"
+    return ok, detail, bypass_s
+
+
 RUNNERS: dict[str, Callable[..., tuple[bool, str, float]]] = {
     "v2": run_v2,
     "v3": run_v3,
@@ -283,6 +324,7 @@ RUNNERS: dict[str, Callable[..., tuple[bool, str, float]]] = {
     "interstitial": run_interstitial,
     "arvancloud": run_arvancloud,
     "arcaptcha": run_arcaptcha,
+    "geetest": run_geetest,
 }
 
 

@@ -1,8 +1,9 @@
 <p align="center">
   <h1 align="center">PyPasser</h1>
   <p align="center">
-    Bypass & solve CAPTCHAs in Python — reCAPTCHA V3 over pure HTTP, V2 via audio,
-    Cloudflare Turnstile, ARCaptcha, and clear anti-bot walls for cookie replay.
+    Bypass & solve CAPTCHAs in Python — reCAPTCHA V3 and GeeTest V4 over pure
+    HTTP requests, V2 via audio, Cloudflare Turnstile, ARCaptcha, and clear anti-bot
+    walls for cookie replay.
   </p>
   <p align="center">
     <a href="https://pypi.org/project/PyPasser/"><img src="https://img.shields.io/pypi/v/PyPasser?color=blue" alt="PyPI"></a>
@@ -18,8 +19,9 @@
 <p align="center"><img src="docs/assets/banner.png" alt="PyPasser"></p>
 
 **PyPasser** is a Python library for bypassing and solving CAPTCHAs. Its main
-trick is bypassing reCAPTCHA V3 with **plain HTTP requests** — no browser, no
-JS engine, just a single function call that returns a valid token. For
+trick is bypassing reCAPTCHA V3 and GeeTest V4 with **plain HTTP requests** —
+no browser, no JS engine, just a single function call that returns a valid
+token. For
 challenges that do need a browser (reCAPTCHA V2, Cloudflare Turnstile), it
 drives one with [Patchright](https://github.com/Kaliiiiiiiiii-Vinyzu/patchright)
 (recommended) or any Playwright-compatible engine and handles the interaction
@@ -44,6 +46,7 @@ HTTP — solve once in a browser, then make all your requests without one.
 - [Cloudflare Antibot (Interstitial) Solver](#cloudflare-antibot-interstitial-solver)
 - [ArvanCloud Antibot (Interstitial) Bypass](#arvancloud-antibot-interstitial-bypass)
 - [ARCaptcha Bypass](#arcaptcha-bypass)
+- [GeeTest V4](#geetest-v4)
 - [Best Practice: Solve Once, Replay Over HTTP](#best-practice-solve-once-replay-over-http)
 - [Browser Engines](#browser-engines)
 - [Engine Compatibility Table](#engine-compatibility-table)
@@ -65,7 +68,7 @@ Install extras based on what you need:
 
 ```bash
 pip install "PyPasser[stealth,speech]"    # browser solves + audio (most common)
-pip install "PyPasser[stealth,speech,vision]"  # + ARCaptcha puzzle support
+pip install "PyPasser[stealth,speech,vision]"  # + ARCaptcha puzzle, GeeTest slide
 pip install "PyPasser[all]"               # everything
 ```
 
@@ -73,8 +76,8 @@ pip install "PyPasser[all]"               # everything
 | ----- | ------------ | ------- |
 | `browsers` | Playwright | V2, Turnstile, Cloudflare wall |
 | `stealth` | Patchright + Camoufox | Recommended for all browser solves |
-| `speech` | vosk + ffmpeg + pydub | V2 audio challenge, ARCaptcha voice |
-| `vision` | Pillow + NumPy | ARCaptcha slider puzzle |
+| `speech` | vosk + ffmpeg + pydub | V2 audio challenge, ARCaptcha voice, GeeTest voice |
+| `vision` | Pillow + NumPy | ARCaptcha slider puzzle, GeeTest slide |
 | `all` | Everything above | |
 
 After installing a browser extra, download the browser binary once:
@@ -97,16 +100,21 @@ patchright install chromium    # recommended engine
 | Cloudflare Antibot (Interstitial) | Clears the "Just a moment..." wall → `cf_clearance` cookie | Yes (headed only) |
 | ArvanCloud Antibot (Interstitial) | Decodes the JSFuck challenge in pure Python → clearance cookies | No |
 | ARCaptcha (puzzle, voice, grid) | Speaks the ARCaptcha HTTP API directly | No |
+| GeeTest V4 (slide, ai, winlinze, match, svg_icon, icon, nine, voice, invisible) | Speaks the GeeTest v4 `/load` + `/verify` API directly | No |
 
 Every solver has a **sync** (`solve`) and **async** (`asolve`) version with the
 same arguments, and every solver returns a `SolverResult`:
 
 ```python
 result.is_solved       # bool
-result.response_token  # str or None — the token to submit
+result.response_token  # str/dict or None — the token to submit
 result.cookies         # dict or None — clearance cookies (anti-bot walls)
 result.user_agent      # str or None — the UA those cookies are bound to
 ```
+
+GeeTest is the one solver whose token is structured rather than a string: its
+`response_token` holds the widget's `seccode` object serialized as JSON — see
+[GeeTest V4](#geetest-v4).
 
 ---
 
@@ -373,6 +381,106 @@ Example: [`arcaptcha.py`](examples/arvancloud/arcaptcha.py)
 
 ---
 
+## GeeTest V4
+
+GeeTest V4 loads a challenge over `/load`, asks you to solve it, and validates
+your answer over `/verify`. PyPasser speaks that protocol directly: it fetches
+the challenge, answers it locally, signs the payload with the widget's RSA key,
+does the proof-of-work, and returns the `seccode` object the site expects — no
+browser, no JS engine.
+
+> **Every GeeTest V4 challenge type is supported** — `slide`, `ai`, `winlinze`,
+> `match`, `svg_icon`, `icon`, `nine`, `voice`, and the invisible-bind variant.
+> The default `risk_type="auto"` detects which one a captcha id serves and
+> solves it without further configuration.
+
+```bash
+pip install "PyPasser[speech,vision]"  # voice + slide/svg challenges
+```
+
+```python
+import json
+from pypasser.captcha import geetest
+
+result = geetest.v4.solve("CAPTCHA_ID")
+seccode = json.loads(result.response_token)
+seccode["captcha_output"]  # submit these three to the site
+seccode["pass_token"]
+seccode["gen_time"]
+```
+
+Async works the same way:
+
+```python
+result = await geetest.v4.asolve("CAPTCHA_ID")
+```
+
+### Finding the captcha id
+
+The id is a 32-character hex string the site passes to `initGeetest4()`. Easiest
+way to get it: open DevTools on the target page → **Network** (Requests) tab →
+filter `load` → the request to GeeTest's `/load` endpoint carries it as the
+`captcha_id` query parameter:
+
+```
+https://gcaptcha4.geevisit.com/load?callback=cb&captcha_id=54088bb07d2df3c46b79f80300b0abbe
+  &challenge=...&client_type=web&lang=eng
+```
+
+Alternatively, search the page source for `captchaId`:
+
+```js
+initGeetest4({ captchaId: "54088bb07d2df3c46b79f80300b0abbe", product: "popup" })
+```
+
+### Try it
+
+GeeTest's own demo page lets you test every challenge type live:
+
+<https://gt4.geetest.com/demov4/index-en.html>
+
+Open it, pick a challenge type, and pull the captcha id out of the `/load`
+request as described above (the public demo id is
+`54088bb07d2df3c46b79f80300b0abbe`).
+
+### Challenge types
+
+Leave `risk_type` at its default `"auto"` and the solver asks `/load` which type
+the id serves, then picks a strategy. Set it explicitly only when you want to
+force one:
+
+| `risk_type` | How it's solved |
+| ----------- | --------------- |
+| `slide` / `ai` / `winlinze` / `match` | Solved locally from the challenge images, audio fallback |
+| `svg_icon` | Keyframe sweep over the SVG, audio fallback |
+| `nine` / `icon` | Audio fallback |
+| `voice` | Audio transcribed with vosk |
+
+The audio fallback is what makes `nine` and `icon` solvable — those challenges
+have no image answer PyPasser can reconstruct, so it asks the same captcha id
+for a voice challenge instead.
+
+### Parameters
+
+| Parameter | Default | Description |
+| --------- | ------- | ----------- |
+| `captcha_id` | — | The site's GeeTest V4 captcha id |
+| `risk_type` | `"auto"` | `"auto"` or one of the types above |
+| `proxy` | `None` | Proxy URL |
+| `timeout` | `20` | Per-request timeout in seconds |
+| `lang` | `"eng"` | Language sent to `/load` |
+| `user_agent` | Chrome UA | User agent for every request |
+| `attempts` | `3` | Attempts before giving up |
+| `voice_model_path` | `None` | Vosk model directory for voice challenges |
+
+> **No shipped key.** The RSA modulus GeeTest signs payloads with rotates, so
+> PyPasser does not ship one. It recovers the live modulus from the widget
+> script the server points at (`static_path` + `/js/gcaptcha4.js`) on first
+> use, and re-recovers it automatically if the server rejects a signature
+> (`-50002`). 
+
+---
+
 ## Best Practice: Solve Once, Replay Over HTTP
 
 The most efficient pattern for browser-based solver is:
@@ -442,6 +550,7 @@ Live-tested results (2captcha demos, cluade.ai, ArvanCloud/ARCaptcha sites):
 | CF interstitial | Blocked | **Works** (headed) | Blocked | — |
 | ArvanCloud | — | — | — | **Works** (HTTP) |
 | ARCaptcha | — | — | — | **Works** (HTTP) |
+| GeeTest V4 | — | — | — | **Works** (HTTP) |
 
 **Why some engines fail:**
 
@@ -452,8 +561,8 @@ Live-tested results (2captcha demos, cluade.ai, ArvanCloud/ARCaptcha sites):
 - **Headless interstitial** fails across all engines (including patchright) —
   Cloudflare detects headless below the fingerprint layer. Headed patchright
   passes in ~8 seconds.
-- **HTTP solvers** (V3, ArvanCloud, ARCaptcha) don't use a browser at all, so
-  engine choice doesn't apply.
+- **HTTP solvers** (V3, ArvanCloud, ARCaptcha, GeeTest) don't use a browser at
+  all, so engine choice doesn't apply.
 - **IP reputation** matters more than engine choice. A flagged datacenter IP
   fails regardless of engine.
 
@@ -481,6 +590,16 @@ anti-bot clearance cookies over plain HTTP:
 | ARCaptcha puzzle hidden                 | (HTTP Req) | arcaptcha                 | PASS   |   0.7s | accepted                                 |
 | ARCaptcha puzzle                        | (HTTP Req) | arcaptcha                 | PASS   |   0.6s | accepted                                 |
 | ARCaptcha 9-grid image (voice)          | (HTTP Req) | arcaptcha                 | PASS   |   7.6s | accepted                                 |
+| GeeTest V4 auto-detect                  | (HTTP Req) | geetest                   | PASS   |   5.1s | token=5e5f9abe                           |
+| GeeTest V4 slide                        | (HTTP Req) | geetest                   | PASS   |   2.4s | token=09db69c3                           |
+| GeeTest V4 ai                           | (HTTP Req) | geetest                   | PASS   |   1.5s | token=e2fe0b29                           |
+| GeeTest V4 winlinze                     | (HTTP Req) | geetest                   | PASS   |   1.1s | token=a28e316d                           |
+| GeeTest V4 match                        | (HTTP Req) | geetest                   | PASS   |   1.3s | token=7cd42d43                           |
+| GeeTest V4 nine (voice)                 | (HTTP Req) | geetest                   | PASS   |   2.8s | token=be043368                           |
+| GeeTest V4 icon (voice)                 | (HTTP Req) | geetest                   | PASS   |   2.7s | token=cba3b40f                           |
+| GeeTest V4 svg_icon                     | (HTTP Req) | geetest                   | PASS   |   1.7s | token=19b497b8                           |
+| GeeTest V4 voice                        | (HTTP Req) | geetest                   | PASS   |   2.3s | token=87ad862b                           |
+| GeeTest V4 invisible-bind (ai)          | (HTTP Req) | geetest                   | PASS   |   1.4s | token=60054b0d                           |
 +-----------------------------------------+------------+---------------------------+--------+--------+------------------------------------------+
 ```
 
@@ -508,13 +627,14 @@ patchright install chromium
 ### Running the benchmark
 
 ```bash
-# Run all 12 targets
+# Run all 22 targets
 python benchmark/run.py
 
-# Filter by group (recaptcha, cloudflare, arvancloud, arcaptcha, antibots)
+# Filter by group (recaptcha, cloudflare, arvancloud, arcaptcha, geetest, antibots)
 python benchmark/run.py --targets recaptcha
 python benchmark/run.py --targets cloudflare
 python benchmark/run.py --targets arcaptcha
+python benchmark/run.py --targets geetest      # all GeeTest risk types
 
 # Filter by comma-separated slugs
 python benchmark/run.py --targets v2-callback,turnstile,arcaptcha-demo
@@ -552,6 +672,9 @@ Cloudflare detects headless execution across all browser engines.
 | `ARCaptchaError` | ARCaptcha | Base for ARCaptcha errors |
 | `ARCaptchaBlocked` | ARCaptcha | Server flagged the session |
 | `ARCaptchaSolveFailed` | ARCaptcha | Not solved within attempt budget |
+| `GeeTestError` | GeeTest | Base for GeeTest errors |
+| `GeeTestSolveFailed` | GeeTest | Not solved within attempt budget, or the signing key could not be recovered |
+| `RequestRateLimited` | GeeTest | Every mirror answered 429/5xx |
 
 All exceptions inherit from `PyPasserError`.
 
@@ -561,10 +684,10 @@ All exceptions inherit from `PyPasserError`.
 
 Planned features and improvements:
 
+- [x] **GeeTest support** — V4, pure HTTP
 - [ ] **hCaptcha support**
 - [ ] **Image / normal CAPTCHA**
 - [ ] **FunCaptcha support**
-- [ ] **GeeTest support**
 - [ ] **Lemin support**
 - [ ] **Built-in stealth browser** — a dedicated managed browser that handles
       all anti-detection out of the box, no engine choice needed
