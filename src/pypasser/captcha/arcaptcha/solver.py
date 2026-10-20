@@ -30,7 +30,6 @@ its own wire calls.
 from __future__ import annotations
 
 import io
-import os
 import random
 import tempfile
 import time
@@ -55,6 +54,7 @@ from pypasser.exceptions import (
     ARCaptchaSolveFailed,
     RequestFailed,
 )
+from pypasser.speech import cleanup_audio
 
 
 def _headers(domain: str, lang: str, ua: str) -> dict[str, str]:
@@ -265,10 +265,7 @@ class ARCaptchaSolver(_ARCore):
             else:
                 text = transcribe(tmp_path)
         finally:
-            os.unlink(tmp_path)
-            wav = tmp_path.replace(".mp3", ".wav")
-            if os.path.exists(wav):
-                os.unlink(wav)
+            cleanup_audio(tmp_path)
         if not text:
             raise ARCaptchaSolveFailed("transcription empty")
         return {"challenge_id": content["challenge_id"], "text": text}

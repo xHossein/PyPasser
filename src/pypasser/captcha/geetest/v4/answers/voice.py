@@ -1,17 +1,14 @@
-"""Answer strategy for the GeeTest V4 ``voice``."""
+"""Answer strategy for the GeeTest V4 ``voice`` risk type."""
 
 from __future__ import annotations
 
-import json
-import subprocess
-from typing import Any, Dict, Optional, Sequence, Tuple
+from typing import Any, Optional, Tuple
 
-from pypasser.exceptions import GeeTestSolveFailed
+from pypasser.exceptions import AudioDecodeError, GeeTestSolveFailed
+from pypasser.speech import SAMPLE_RATE, decode_to_pcm, load_model, recognize_pcm
 
-SAMPLE_RATE = 16000
-_MODELS: Dict[Optional[str], Any] = {}
-
-DEFAULT_LANG = "en-us"
+# Vosk's language code for the English model, not the ``/load`` lang.
+VOICE_MODEL_LANG = "en-us"
 
 # The words the recognizer is allowed to emit. Anything else (the carrier
 # phrase) collapses into [unk] and is dropped.
@@ -58,71 +55,22 @@ def transcribe(audio: bytes, model_path: Optional[str] = None) -> str:
     audio: bytes
         The challenge audio, in any container ffmpeg can read.
     model_path: str, optional
-        Directory of a Vosk model. When omitted the English model named by
-        :data:`DEFAULT_LANG` is used; Vosk downloads it on first use.
+        Directory of a Vosk model. When omitted Vosk's English model is used
+        and downloaded on first use.
     """
-    return digits(_recognize(_to_pcm(audio), model_path))
-
-
-def _to_pcm(audio: bytes) -> bytes:
-    """Decode any container to 16 kHz mono signed-16 PCM via ffmpeg."""
     try:
-        import imageio_ffmpeg
-    except ImportError as exc:  # pragma: no cover - dependency error path
-        raise GeeTestSolveFailed(
-            "voice challenges need the 'speech' extra: pip install PyPasser[speech]"
-        ) from exc
-    try:
-        completed = subprocess.run(
-            [
-                imageio_ffmpeg.get_ffmpeg_exe(),
-                "-v",
-                "quiet",
-                "-i",
-                "pipe:0",
-                "-ar",
-                str(SAMPLE_RATE),
-                "-ac",
-                "1",
-                "-f",
-                "s16le",
-                "-",
-            ],
-            input=audio,
-            capture_output=True,
-            check=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        raise GeeTestSolveFailed(f"ffmpeg could not decode the audio: {exc}") from exc
-    return completed.stdout
+        pcm = decode_to_pcm(audio, sample_rate=SAMPLE_RATE)
+        model = _model(model_path)
+        return digits(recognize_pcm(pcm, model, _GRAMMAR, SAMPLE_RATE))
+    except (ImportError, AudioDecodeError) as exc:
+        raise GeeTestSolveFailed(f"voice challenge failed: {exc}") from exc
 
 
-def _recognize(pcm: bytes, model_path: Optional[str]) -> str:
-    try:
-        import vosk
-    except ImportError as exc:  # pragma: no cover - dependency error path
-        raise GeeTestSolveFailed(
-            "voice challenges need the 'speech' extra: pip install PyPasser[speech]"
-        ) from exc
-
-    vosk.SetLogLevel(-1)
-    model = _model(vosk, model_path)
-    recognizer = vosk.KaldiRecognizer(model, SAMPLE_RATE, json.dumps(list(_GRAMMAR)))
-    recognizer.AcceptWaveform(pcm)
-    return json.loads(recognizer.FinalResult()).get("text", "")
-
-
-def _model(vosk: Any, model_path: Optional[str]) -> Any:
-    """The Vosk model for ``model_path``, loaded once per process.
-
-    Loading costs about a second and the model is immutable, so repeats of the
-    same solve reuse it.
-    """
-    if model_path not in _MODELS:
-        _MODELS[model_path] = (
-            vosk.Model(model_path) if model_path else vosk.Model(lang=DEFAULT_LANG)
-        )
-    return _MODELS[model_path]
+def _model(model_path: Optional[str]) -> Any:
+    """The Vosk model for ``model_path``, loaded once per process."""
+    if model_path:
+        return load_model(path=model_path)
+    return load_model(lang=VOICE_MODEL_LANG)
 
 
 def answer_fields(audio: bytes, model_path: Optional[str] = None) -> dict:
@@ -133,4 +81,4 @@ def answer_fields(audio: bytes, model_path: Optional[str] = None) -> dict:
     return {"userresponse": text}
 
 
-__all__: Sequence[str] = ["answer_fields", "digits", "transcribe"]
+__all__ = ["VOICE_MODEL_LANG", "answer_fields", "digits", "transcribe"]

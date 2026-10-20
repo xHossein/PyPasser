@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import io
-import os
 import random
 import tempfile
 from typing import Any, Optional
@@ -26,6 +25,7 @@ from pypasser.exceptions import (
     ARCaptchaSolveFailed,
     RequestFailed,
 )
+from pypasser.speech import cleanup_audio
 
 
 class AsyncARCaptchaSolver(_ARCore):
@@ -133,7 +133,7 @@ class AsyncARCaptchaSolver(_ARCore):
             except ValueError as exc:
                 raise ARCaptchaSolveFailed(f"puzzle CV failed: {exc}") from exc
 
-        return await asyncio.get_event_loop().run_in_executor(None, _solve)
+        return await asyncio.to_thread(_solve)
 
     async def _solve_voice(self, client: httpx.AsyncClient) -> dict[str, Any]:
         data = await self._create(client, "create/voice")
@@ -145,19 +145,13 @@ class AsyncARCaptchaSolver(_ARCore):
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
             tmp.write(audio)
             tmp_path = tmp.name
-        loop = asyncio.get_event_loop()
         try:
             if self.voice_model:
-                text = await loop.run_in_executor(
-                    None, transcribe, tmp_path, self.voice_model
-                )
+                text = await asyncio.to_thread(transcribe, tmp_path, self.voice_model)
             else:
-                text = await loop.run_in_executor(None, transcribe, tmp_path)
+                text = await asyncio.to_thread(transcribe, tmp_path)
         finally:
-            os.unlink(tmp_path)
-            wav = tmp_path.replace(".mp3", ".wav")
-            if os.path.exists(wav):
-                os.unlink(wav)
+            cleanup_audio(tmp_path)
         if not text:
             raise ARCaptchaSolveFailed("transcription empty")
         return {"challenge_id": content["challenge_id"], "text": text}

@@ -6,7 +6,7 @@ class PyPasserError(Exception):
 
 
 class RequestFailed(PyPasserError):
-    """Raised when the network request to Google fails."""
+    """Raised when a solver's network request fails."""
 
 
 class InvalidAnchorURL(PyPasserError):
@@ -19,6 +19,10 @@ class RecaptchaTokenNotFound(PyPasserError):
 
 class RecaptchaResponseNotFound(PyPasserError):
     """Raised when the recaptcha response cannot be found (wrong URL or no reCaptcha on target)."""
+
+
+class AudioDecodeError(PyPasserError):
+    """Raised when a downloaded challenge clip cannot be decoded to PCM."""
 
 
 class InvalidProxyURL(PyPasserError):
@@ -86,4 +90,4 @@ class GeeTestSolveFailed(GeeTestError):
 
 
 class RequestRateLimited(RequestFailed):
-    """Every GeeTest mirror answered 429/503 instead of serving the request."""
+    """Every GeeTest mirror answered 429 or 5xx instead of serving the request."""
