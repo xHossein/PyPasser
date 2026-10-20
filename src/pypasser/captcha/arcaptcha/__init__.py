@@ -16,7 +16,10 @@ from __future__ import annotations
 
 from typing import Any, Optional, Union
 
-from pypasser.captcha.arcaptcha.pageflow import AsyncPageARCaptchaSolver, PageARCaptchaSolver
+from pypasser.captcha.arcaptcha.pageflow import (
+    AsyncPageARCaptchaSolver,
+    PageARCaptchaSolver,
+)
 from pypasser.captcha.arcaptcha.solver import ARCaptchaSolver
 from pypasser.exceptions import ARCaptchaError
 from pypasser.structs import SolverResult

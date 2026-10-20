@@ -19,7 +19,12 @@ from pypasser.captcha.recaptcha.v3.constants import (
     POST_DATA,
 )
 from pypasser.captcha.recaptcha.v3.render import latest_render_version
-from pypasser.exceptions import RecaptchaResponseNotFound, RecaptchaTokenNotFound, RequestFailed
+from pypasser.exceptions import (
+    RecaptchaResponseNotFound,
+    RecaptchaTokenNotFound,
+    RequestFailed,
+)
+from pypasser.proxies import httpx_client_kwargs
 from pypasser.structs import SolverResult
 
 _TOKEN_RE = re.compile(r'"recaptcha-token" value="(.*?)"')
@@ -29,12 +34,7 @@ _DEFAULT_TIMEOUT = 20
 
 
 def _client_kwargs(proxy: str | None, timeout: Union[int, float]) -> dict:
-    from pypasser.proxies import build_httpx_mounts
-
-    mounts = build_httpx_mounts(proxy)
-    if mounts is not None:
-        return {"headers": BASE_HEADERS, "timeout": timeout, "mounts": mounts}
-    return {"headers": BASE_HEADERS, "timeout": timeout}
+    return httpx_client_kwargs(timeout, BASE_HEADERS, proxy)
 
 
 class _V3Core:

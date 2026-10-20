@@ -6,6 +6,7 @@ import asyncio
 import time
 from typing import TYPE_CHECKING, Optional
 
+from pypasser.browsers.session import asession_result
 from pypasser.captcha.turnstile.flow import (
     CHALLENGE_PAGE_MARKERS,
     CHECKBOX_SELECTORS,
@@ -14,7 +15,6 @@ from pypasser.captcha.turnstile.flow import (
     WIDGET_FRAME_SELECTORS,
     _poll_limit,
     _ScanSchedule,
-    _session_result,
     _window_left,
 )
 from pypasser.structs import SolverResult
@@ -33,15 +33,7 @@ class AsyncTurnstileSolver:
     async def _result(
         self, token: Optional[str], adapter: "AsyncBrowserAdapter"
     ) -> SolverResult:
-        try:
-            cookies = await adapter.cookies() or None
-        except Exception:
-            cookies = None
-        try:
-            user_agent = await adapter.user_agent()
-        except Exception:
-            user_agent = None
-        return _session_result(token, cookies, user_agent)
+        return await asession_result(adapter, token)
 
     async def solve(self, adapter: "AsyncBrowserAdapter") -> SolverResult:
         token = await self._read_token(adapter)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Union
 from urllib.parse import urlparse
 
 from pypasser.exceptions import InvalidProxyURL
@@ -53,3 +53,18 @@ def build_httpx_mounts(proxy: str | None) -> dict[str, Any] | None:
         return {"all://": httpx.HTTPTransport(proxy=normalize_proxy_url(proxy))}
 
     raise InvalidProxyURL(f"Expected a proxy URL string, got {type(proxy).__name__}")
+
+
+def httpx_client_kwargs(
+    timeout: Union[int, float],
+    headers: dict[str, str] | None = None,
+    proxy: str | None = None,
+) -> dict[str, Any]:
+    """Keyword arguments for an ``httpx.Client``/``AsyncClient``."""
+    kwargs: dict[str, Any] = {"timeout": timeout}
+    if headers is not None:
+        kwargs["headers"] = headers
+    mounts = build_httpx_mounts(proxy)
+    if mounts is not None:
+        kwargs["mounts"] = mounts
+    return kwargs

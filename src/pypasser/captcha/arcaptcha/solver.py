@@ -54,6 +54,7 @@ from pypasser.exceptions import (
     ARCaptchaSolveFailed,
     RequestFailed,
 )
+from pypasser.proxies import httpx_client_kwargs
 from pypasser.speech import cleanup_audio
 
 
@@ -71,17 +72,7 @@ def _headers(domain: str, lang: str, ua: str) -> dict[str, str]:
 def _client_kwargs(
     proxy: Union[str, None], timeout: Union[int, float], ua: str
 ) -> dict[str, Any]:
-    kwargs: dict[str, Any] = {
-        "timeout": timeout,
-        "headers": {"User-Agent": ua},
-    }
-    if proxy:
-        from pypasser.proxies import build_httpx_mounts
-
-        mounts = build_httpx_mounts(proxy)
-        if mounts is not None:
-            kwargs["mounts"] = mounts
-    return kwargs
+    return httpx_client_kwargs(timeout, {"User-Agent": ua}, proxy)
 
 
 class _ARCore:

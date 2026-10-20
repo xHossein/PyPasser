@@ -10,6 +10,7 @@ from pypasser.antibot.cloudflare.flow import (
     WIDGET_FRAME_SELECTORS,
     require_clearance,
 )
+from pypasser.browsers.session import asession_result
 from pypasser.structs import SolverResult
 
 
@@ -30,24 +31,6 @@ async def _wall_present(adapter: Any) -> bool:
     return False
 
 
-async def _session_result(adapter: Any) -> SolverResult:
-    """A cleared session: browser cookies plus the UA they are bound to."""
-    try:
-        cookies = await adapter.cookies() or None
-    except Exception:
-        cookies = None
-    try:
-        user_agent = await adapter.user_agent()
-    except Exception:
-        user_agent = None
-    return SolverResult(
-        is_solved=True,
-        response_token=None,
-        cookies=cookies,
-        user_agent=user_agent,
-    )
-
-
 class AsyncCloudflareBypass:
     """Asynchronous Cloudflare interstitial bypass (async Playwright pages)."""
 
@@ -62,7 +45,7 @@ class AsyncCloudflareBypass:
         adapter = aget_adapter(backend, page)
 
         if not await _wall_present(adapter):
-            return await _session_result(adapter)
+            return await asession_result(adapter)
 
         solver = AsyncTurnstileSolver(attempts=self.attempts, timeout=self.timeout)
         result = await solver.solve(adapter)
@@ -71,5 +54,5 @@ class AsyncCloudflareBypass:
             return result
 
         if not await _wall_present(adapter):
-            return await _session_result(adapter)
+            return await asession_result(adapter)
         return result

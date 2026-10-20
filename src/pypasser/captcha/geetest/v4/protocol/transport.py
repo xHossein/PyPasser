@@ -17,6 +17,7 @@ from pypasser.captcha.geetest.v4.protocol.constants import (
     STATIC_BASE,
 )
 from pypasser.exceptions import GeeTestError, RequestFailed, RequestRateLimited
+from pypasser.proxies import httpx_client_kwargs
 
 _RATE_LIMIT_STATUSES = (429,)
 
@@ -133,14 +134,7 @@ def client_kwargs(
     proxy: Union[str, None], timeout: Union[int, float], user_agent: str
 ) -> dict[str, Any]:
     """Keyword arguments for an httpx client (shared by sync and async)."""
-    kwargs: dict[str, Any] = {"timeout": timeout, "headers": {"User-Agent": user_agent}}
-    if proxy:
-        from pypasser.proxies import build_httpx_mounts
-
-        mounts = build_httpx_mounts(proxy)
-        if mounts is not None:
-            kwargs["mounts"] = mounts
-    return kwargs
+    return httpx_client_kwargs(timeout, {"User-Agent": user_agent}, proxy)
 
 
 def base_params(callback: str, captcha_id: str, **extra: Any) -> dict[str, Any]:

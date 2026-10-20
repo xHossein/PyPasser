@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import httpx
 
-from pypasser.captcha.recaptcha.v3.flow import _client_kwargs, _V3Core, _wrap_request_error
+from pypasser.captcha.recaptcha.v3.flow import (
+    _client_kwargs,
+    _V3Core,
+    _wrap_request_error,
+)
 from pypasser.captcha.recaptcha.v3.render import alatest_render_version
 from pypasser.structs import SolverResult
 

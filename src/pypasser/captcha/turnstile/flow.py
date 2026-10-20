@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 from typing import TYPE_CHECKING, Optional
 
+from pypasser.browsers.session import session_result
 from pypasser.structs import SolverResult
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -67,17 +68,6 @@ class _ScanSchedule:
         return True
 
 
-def _session_result(
-    token: Optional[str], cookies: Optional[dict], user_agent: Optional[str]
-) -> SolverResult:
-    return SolverResult(
-        is_solved=True,
-        response_token=token,
-        cookies=cookies,
-        user_agent=user_agent,
-    )
-
-
 class TurnstileSolver:
     """Synchronous Cloudflare Turnstile solver."""
 
@@ -86,15 +76,7 @@ class TurnstileSolver:
         self.timeout = timeout
 
     def _result(self, token: Optional[str], adapter: "BrowserAdapter") -> SolverResult:
-        try:
-            cookies = adapter.cookies() or None
-        except Exception:
-            cookies = None
-        try:
-            user_agent = adapter.user_agent()
-        except Exception:
-            user_agent = None
-        return _session_result(token, cookies, user_agent)
+        return session_result(adapter, token)
 
     def solve(self, adapter: "BrowserAdapter") -> SolverResult:
         token = self._read_token(adapter)

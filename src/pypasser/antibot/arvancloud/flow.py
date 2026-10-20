@@ -24,6 +24,7 @@ from pypasser.antibot.arvancloud.challenge import (
     is_challenge,
 )
 from pypasser.exceptions import ArvanBypassError, RequestFailed
+from pypasser.proxies import httpx_client_kwargs
 from pypasser.structs import SolverResult
 
 DEFAULT_UA = (
@@ -52,17 +53,9 @@ class _ArvanCore:
         )
 
     def _client_kwargs(self, proxy: Optional[str]) -> dict[str, Any]:
-        kwargs: dict[str, Any] = {
-            "timeout": self.timeout,
-            "headers": {"User-Agent": self.user_agent},
-        }
-        if proxy:
-            from pypasser.proxies import build_httpx_mounts
-
-            mounts = build_httpx_mounts(proxy)
-            if mounts is not None:
-                kwargs["mounts"] = mounts
-        return kwargs
+        return httpx_client_kwargs(
+            self.timeout, {"User-Agent": self.user_agent}, proxy
+        )
 
 
 class ArvanCloudBypass(_ArvanCore):

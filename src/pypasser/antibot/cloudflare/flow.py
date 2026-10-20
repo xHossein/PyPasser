@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from pypasser.captcha.turnstile.flow import CHALLENGE_PAGE_MARKERS, WIDGET_FRAME_SELECTORS
+from pypasser.browsers.session import session_result
+from pypasser.captcha.turnstile.flow import (
+    CHALLENGE_PAGE_MARKERS,
+    WIDGET_FRAME_SELECTORS,
+)
 from pypasser.exceptions import CloudflareClearanceError
 from pypasser.structs import SolverResult
 
@@ -27,24 +31,6 @@ def _wall_present(adapter: Any) -> bool:
         except Exception:
             continue
     return False
-
-
-def _session_result(adapter: Any) -> SolverResult:
-    """A cleared session: browser cookies plus the UA they are bound to."""
-    try:
-        cookies = adapter.cookies() or None
-    except Exception:
-        cookies = None
-    try:
-        user_agent = adapter.user_agent()
-    except Exception:
-        user_agent = None
-    return SolverResult(
-        is_solved=True,
-        response_token=None,
-        cookies=cookies,
-        user_agent=user_agent,
-    )
 
 
 def require_clearance(result: SolverResult) -> None:
@@ -72,7 +58,7 @@ class CloudflareBypass:
         adapter = get_adapter(backend, page)
 
         if not _wall_present(adapter):
-            return _session_result(adapter)
+            return session_result(adapter)
 
         result = TurnstileSolver(attempts=self.attempts, timeout=self.timeout).solve(adapter)
         if result.is_solved:
@@ -80,5 +66,5 @@ class CloudflareBypass:
             return result
 
         if not _wall_present(adapter):
-            return _session_result(adapter)
+            return session_result(adapter)
         return result
