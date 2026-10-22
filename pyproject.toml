@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyPasser"
-version = "1.0.0"
-description = "Python library for solving captchas (Google reCaptcha, Cloudflare Turnstile, Arvancloud ARCaptcha) and clearing anti-bot challenges (Cloudflare, ArvanCloud) via pure HTTP requests and browser automation."
+version = "1.1.0"
+description = "Python library for solving captchas (Google reCaptcha, Cloudflare Turnstile, GeeTest, Lemin Cropped, Arvancloud ARCaptcha) and clearing anti-bot challenges (Cloudflare, ArvanCloud) via pure HTTP requests and browser automation."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -15,7 +15,7 @@ keywords = [
     "Bypass-reCaptcha", "Bypass reCaptcha V2", "Bypass-reCaptcha-V2",
     "Solve-reCaptcha-V2", "Google reCaptcha", "Google-reCaptcha",
     "Bypass Turnstile", "Solve Turnstile", "Anti-bot", "Bypass Cloudflare",
-    "Bypass ArvanCloud", "Solve ARCaptcha",
+    "Bypass ArvanCloud", "Solve ARCaptcha", "Solve GeeTest", "Solve Lemin"
 ]
 requires-python = ">=3.9"
 classifiers = [

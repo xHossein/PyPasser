@@ -39,6 +39,6 @@ from pypasser.structs import SolverResult
 
 from . import antibot, captcha
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 __all__ = ["antibot", "captcha", "SolverResult", "__version__"]
