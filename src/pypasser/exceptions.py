@@ -81,6 +81,14 @@ class ARCaptchaSolveFailed(ARCaptchaError):
     """The challenge could not be solved within the attempt budget."""
 
 
+class LeminError(PyPasserError):
+    """Base class for Lemin solving errors."""
+
+
+class LeminSolveFailed(LeminError):
+    """The cropped challenge could not be solved within the attempt budget."""
+
+
 class GeeTestError(PyPasserError):
     """Base class for GeeTest solving errors."""
 

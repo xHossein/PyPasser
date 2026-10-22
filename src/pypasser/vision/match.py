@@ -9,7 +9,7 @@ from __future__ import annotations
 import numpy as np
 
 
-def _correlate_valid(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
+def correlate_valid(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     """Cross-correlation of ``img`` with ``kernel``, keeping valid positions."""
     h, w = img.shape
     kh, kw = kernel.shape
@@ -18,6 +18,9 @@ def _correlate_valid(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     fb = np.fft.rfft2(kernel[::-1, ::-1], s=shape)
     full = np.fft.irfft2(fa * fb, s=shape)
     return full[kh - 1:h, kw - 1:w]
+
+
+_correlate_valid = correlate_valid
 
 
 def score_map(image: np.ndarray, template: np.ndarray) -> np.ndarray:
@@ -79,4 +82,4 @@ def best_match_in_band(
     return int(x), int(y + lo), float(band[y, x])
 
 
-__all__ = ["best_match", "best_match_in_band", "score_map"]
+__all__ = ["best_match", "best_match_in_band", "correlate_valid", "score_map"]

@@ -12,13 +12,15 @@ class SolverResult:
     is_solved: bool
         Whether the challenge was solved. For reCaptcha V3 solvers this is
         always ``True`` when a result is returned (failures raise instead).
-    response_token: str or None
-        The ``g-recaptcha-response`` token. For V3 HTTP mode this is the
-        ``rresp`` token; for V3 page mode it is read from the page; for V2 it
-        is the value of the ``#g-recaptcha-response`` textarea. For Cloudflare
-        Turnstile it is the ``cf-turnstile-response`` value (``None`` on the
-        interstitial path, where the page navigates away and the token is
-        gone).
+    response_token: str or dict or None
+        The solver's response token(s).  For reCaptcha this is the
+        ``g-recaptcha-response`` string; for Cloudflare Turnstile it is
+        ``cf-turnstile-response``; for GeeTest v4 it is the JSON-encoded
+        ``seccode`` dict.  For Lemin it is a dict with keys ``pv_token``,
+        ``answer``, and ``challenge_id`` — browser-automation users can
+        inject ``answer`` and ``challenge_id`` into the widget's hidden
+        ``lemin_answer`` / ``lemin_challenge_id`` inputs to mark the
+        challenge as solved.
     cookies: dict or None
         Cookies proving a cleared session, ``name -> value``. The Turnstile
         solver sets it from the browser context after a full-page Cloudflare
@@ -34,6 +36,6 @@ class SolverResult:
     """
 
     is_solved: bool
-    response_token: str | None = None
+    response_token: str | dict[str, str] | None = None
     cookies: dict[str, str] | None = None
     user_agent: str | None = None

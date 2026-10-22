@@ -51,6 +51,12 @@ def _sobel(img: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return gx, gy
 
 
+def sobel_magnitude(gray: np.ndarray) -> np.ndarray:
+    """Gradient magnitude of a 2-D array (3x3 Sobel, Euclidean norm)."""
+    gx, gy = _sobel(np.asarray(gray, dtype=np.float64))
+    return np.hypot(gx, gy)
+
+
 def _dilate(mask: np.ndarray) -> np.ndarray:
     """3x3 binary dilation by shifting (no scipy)."""
     out = mask.copy()
@@ -112,4 +118,4 @@ def canny(
     return (edges * 255).astype(np.uint8)
 
 
-__all__ = ["canny"]
+__all__ = ["canny", "sobel_magnitude"]

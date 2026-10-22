@@ -1,9 +1,7 @@
 <p align="center">
   <h1 align="center">PyPasser</h1>
   <p align="center">
-    Bypass & solve CAPTCHAs in Python — reCAPTCHA V3 and GeeTest V4 over pure
-    HTTP requests, V2 via audio, Cloudflare Turnstile, ARCaptcha, and clear anti-bot
-    walls for cookie replay.
+    Free, open-source CAPTCHA solver for Python (no paid APIs) — solve reCAPTCHA (V2, V3), GeeTest V4, Lemin, Cloudflare Turnstile, ARCaptcha, and anti-bot walls via pure HTTP requests and browser automation.
   </p>
   <p align="center">
     <a href="https://pypi.org/project/PyPasser/"><img src="https://img.shields.io/pypi/v/PyPasser?color=blue" alt="PyPI"></a>
@@ -19,7 +17,7 @@
 <p align="center"><img src="docs/assets/banner.png" alt="PyPasser"></p>
 
 **PyPasser** is a Python library for bypassing and solving CAPTCHAs. Its main
-trick is bypassing reCAPTCHA V3 and GeeTest V4 with **plain HTTP requests** —
+trick is bypassing reCAPTCHA V3, GeeTest V4, and Lemin with **plain HTTP requests** —
 no browser, no JS engine, just a single function call that returns a valid
 token. For
 challenges that do need a browser (reCAPTCHA V2, Cloudflare Turnstile), it
@@ -47,6 +45,7 @@ HTTP — solve once in a browser, then make all your requests without one.
 - [ArvanCloud Antibot (Interstitial) Bypass](#arvancloud-antibot-interstitial-bypass)
 - [ARCaptcha Bypass](#arcaptcha-bypass)
 - [GeeTest V4](#geetest-v4)
+- [Lemin](#lemin)
 - [Best Practice: Solve Once, Replay Over HTTP](#best-practice-solve-once-replay-over-http)
 - [Browser Engines](#browser-engines)
 - [Engine Compatibility Table](#engine-compatibility-table)
@@ -68,7 +67,7 @@ Install extras based on what you need:
 
 ```bash
 pip install "PyPasser[stealth,speech]"    # browser solves + audio (most common)
-pip install "PyPasser[stealth,speech,vision]"  # + ARCaptcha puzzle, GeeTest slide
+pip install "PyPasser[stealth,speech,vision]"  # + ARCaptcha puzzle, GeeTest slide, Lemin cropped
 pip install "PyPasser[all]"               # everything
 ```
 
@@ -77,7 +76,7 @@ pip install "PyPasser[all]"               # everything
 | `browsers` | Playwright | V2, Turnstile, Cloudflare wall |
 | `stealth` | Patchright + Camoufox | Recommended for all browser solves |
 | `speech` | vosk + ffmpeg + pydub | V2 audio challenge, ARCaptcha voice, GeeTest voice |
-| `vision` | Pillow + NumPy | ARCaptcha slider puzzle, GeeTest slide |
+| `vision` | Pillow + NumPy + SciPy | ARCaptcha slider puzzle, GeeTest slide, Lemin cropped |
 | `all` | Everything above | |
 
 After installing a browser extra, download the browser binary once:
@@ -101,6 +100,7 @@ patchright install chromium    # recommended engine
 | ArvanCloud Antibot (Interstitial) | Decodes the JSFuck challenge in pure Python → clearance cookies | No |
 | ARCaptcha (puzzle, voice, grid) | Speaks the ARCaptcha HTTP API directly | No |
 | GeeTest V4 (slide, ai, winlinze, match, svg_icon, icon, nine, voice, invisible) | Speaks the GeeTest v4 `/load` + `/verify` API directly | No |
+| Lemin (cropped jigsaw puzzle) | Computer vision match + signed HTTP `/pre-validate` API | No |
 
 Every solver has a **sync** (`solve`) and **async** (`asolve`) version with the
 same arguments, and every solver returns a `SolverResult`:
@@ -112,9 +112,9 @@ result.cookies         # dict or None — clearance cookies (anti-bot walls)
 result.user_agent      # str or None — the UA those cookies are bound to
 ```
 
-GeeTest is the one solver whose token is structured rather than a string: its
-`response_token` holds the widget's `seccode` object serialized as JSON — see
-[GeeTest V4](#geetest-v4).
+GeeTest and Lemin return structured data in `response_token`:
+- **GeeTest**: JSON string of the widget's `seccode` object (`captcha_output`, `pass_token`, `gen_time`)
+- **Lemin**: dict containing `pv_token` (pre-validate token), `answer` (encoded drag path), and `challenge_id` (UUID) — see [Lemin Cropped Captcha](#lemin-cropped-captcha)
 
 ---
 
@@ -481,6 +481,87 @@ for a voice challenge instead.
 
 ---
 
+## Lemin
+
+Lemin Cropped (`CROPPED_...`) asks the user to drag a jigsaw piece onto its
+matching cut-out slot in a background photo. PyPasser solves it over pure
+HTTP — fetches the scene image, detects the target slot using Sobel edge
+correlation and interior-boundary matching, synthesizes a human-like drag
+trajectory with jitter, and submits it to Lemin's `/pre-validate` endpoint.
+
+No browser, no JS engine required.
+
+```bash
+pip install "PyPasser[vision]"  # NumPy + SciPy for contour edge matching
+```
+
+```python
+from pypasser.captcha import lemin
+
+result = lemin.solve(
+    "CROPPED_3dfdd5c_d1872b526b794d83ba3b365eb15a200b",
+    domain="https://2captcha.com",
+)
+
+data = result.response_token
+print(data["pv_token"])      # pre-validate token returned by Lemin
+print(data["answer"])        # encoded drag path
+print(data["challenge_id"])  # challenge UUID
+```
+
+Async works identically:
+
+```python
+result = await lemin.asolve("CAPTCHA_ID", domain="https://example.com")
+```
+
+### Browser Automation Injection
+
+If you are automating a real browser (Playwright, Selenium, etc.) and want to
+mark the widget as solved without dragging the piece manually:
+
+```python
+# 1. Solve via PyPasser (HTTP only)
+result = lemin.solve(CAPTCHA_ID, domain="https://example.com")
+data = result.response_token
+
+# 2. Inject into the widget's hidden form inputs
+page.evaluate("""({ answer, challengeId }) => {
+    document.querySelector('input[name="lemin_answer"]').value = answer;
+    document.querySelector('input[name="lemin_challenge_id"]').value = challengeId;
+}""", {"answer": data["answer"], "challengeId": data["challenge_id"]})
+
+# 3. Submit the form normally — the site verifies answer + challenge_id
+page.click("#submit-button")
+```
+
+### Finding the captcha id
+
+Open DevTools on the target site → **Network** tab → filter `api.leminnow.com`:
+
+```text
+https://api.leminnow.com/captcha/v1/cropped/CROPPED_3dfdd5c_d1872b526b794d83ba3b365eb15a200b/js
+```
+
+The segment starting with `CROPPED_` is the `captcha_id`.
+
+### Parameters
+
+| Parameter | Default | Description |
+| --------- | ------- | ----------- |
+| `captcha_id` | — | The target's captcha id (``CROPPED_<site>_<hash>``) |
+| `domain` | — | Origin the widget runs on, e.g. ``"https://example.com"`` |
+| `proxy` | `None` | Proxy URL (`http`, `socks5`, etc.) |
+| `timeout` | `20` | Per-request timeout in seconds |
+| `user_agent` | Chrome UA | User agent sent with requests |
+| `screen` | `(1400, 1100)` | Screen resolution reported to the API |
+| `attempts` | `3` | Fresh challenges to try before giving up |
+| `jitter` | `3.0` | Random pixel offset applied along the drag trajectory |
+
+Example: [`single.py`](examples/lemin/single.py)
+
+---
+
 ## Best Practice: Solve Once, Replay Over HTTP
 
 The most efficient pattern for browser-based solver is:
@@ -551,6 +632,7 @@ Live-tested results (2captcha demos, cluade.ai, ArvanCloud/ARCaptcha sites):
 | ArvanCloud | — | — | — | **Works** (HTTP) |
 | ARCaptcha | — | — | — | **Works** (HTTP) |
 | GeeTest V4 | — | — | — | **Works** (HTTP) |
+| Lemin | — | — | — | **Works** (HTTP) |
 
 **Why some engines fail:**
 
@@ -561,7 +643,7 @@ Live-tested results (2captcha demos, cluade.ai, ArvanCloud/ARCaptcha sites):
 - **Headless interstitial** fails across all engines (including patchright) —
   Cloudflare detects headless below the fingerprint layer. Headed patchright
   passes in ~8 seconds.
-- **HTTP solvers** (V3, ArvanCloud, ARCaptcha, GeeTest) don't use a browser at
+- **HTTP solvers** (V3, ArvanCloud, ARCaptcha, GeeTest, Lemin) don't use a browser at
   all, so engine choice doesn't apply.
 - **IP reputation** matters more than engine choice. A flagged datacenter IP
   fails regardless of engine.
@@ -600,6 +682,7 @@ anti-bot clearance cookies over plain HTTP:
 | GeeTest V4 svg_icon                     | (HTTP Req) | geetest                   | PASS   |   1.7s | token=19b497b8                           |
 | GeeTest V4 voice                        | (HTTP Req) | geetest                   | PASS   |   2.3s | token=87ad862b                           |
 | GeeTest V4 invisible-bind (ai)          | (HTTP Req) | geetest                   | PASS   |   1.4s | token=60054b0d                           |
+| Lemin cropped (2captcha demo)           | (HTTP Req) | lemin                     | PASS   |   3.7s | pv_token=gAAAAABq2cgU                    |
 +-----------------------------------------+------------+---------------------------+--------+--------+------------------------------------------+
 ```
 
@@ -627,14 +710,15 @@ patchright install chromium
 ### Running the benchmark
 
 ```bash
-# Run all 22 targets
+# Run all 23 targets
 python benchmark/run.py
 
-# Filter by group (recaptcha, cloudflare, arvancloud, arcaptcha, geetest, antibots)
+# Filter by group (recaptcha, cloudflare, arvancloud, arcaptcha, geetest, lemin, antibots)
 python benchmark/run.py --targets recaptcha
 python benchmark/run.py --targets cloudflare
 python benchmark/run.py --targets arcaptcha
 python benchmark/run.py --targets geetest      # all GeeTest risk types
+python benchmark/run.py --targets lemin
 
 # Filter by comma-separated slugs
 python benchmark/run.py --targets v2-callback,turnstile,arcaptcha-demo
@@ -675,6 +759,8 @@ Cloudflare detects headless execution across all browser engines.
 | `GeeTestError` | GeeTest | Base for GeeTest errors |
 | `GeeTestSolveFailed` | GeeTest | Not solved within attempt budget, or the signing key could not be recovered |
 | `RequestRateLimited` | GeeTest | Every mirror answered 429/5xx |
+| `LeminError` | Lemin | Base for Lemin errors |
+| `LeminSolveFailed` | Lemin | Challenge could not be solved within attempt budget |
 
 All exceptions inherit from `PyPasserError`.
 
@@ -685,10 +771,10 @@ All exceptions inherit from `PyPasserError`.
 Planned features and improvements:
 
 - [x] **GeeTest support** — V4, pure HTTP
+- [x] **Lemin support** — Cropped jigsaw puzzle, pure HTTP
 - [ ] **hCaptcha support**
 - [ ] **Image / normal CAPTCHA**
 - [ ] **FunCaptcha support**
-- [ ] **Lemin support**
 - [ ] **Built-in stealth browser** — a dedicated managed browser that handles
       all anti-detection out of the box, no engine choice needed
 - [ ] **Proxy rotation** — built-in proxy pool for volume work

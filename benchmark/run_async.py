@@ -25,7 +25,7 @@ import httpx
 
 from pypasser.antibot import arvancloud, cloudflare
 from pypasser.antibot.arvancloud.challenge import is_challenge
-from pypasser.captcha import arcaptcha, geetest, recaptcha, turnstile
+from pypasser.captcha import arcaptcha, geetest, lemin, recaptcha, turnstile
 
 BASE = "https://2captcha.com/demo"
 VERIFY_URL = "https://2captcha.com/api/v1/captcha-demo/recaptcha/verify"
@@ -34,6 +34,9 @@ TURNSTILE_VERIFY_URL = "https://2captcha.com/api/v1/captcha-demo/cloudflare-turn
 
 # GeeTest demo id; it serves every supported risk_type on request.
 GEETEST_ID = "54088bb07d2df3c46b79f80300b0abbe"
+# Lemin demo captcha id and verify URL on 2captcha.com.
+LEMIN_ID = "CROPPED_3dfdd5c_d1872b526b794d83ba3b365eb15a200b"
+LEMIN_VERIFY_URL = "https://2captcha.com/api/v1/captcha-demo/lemin/verify"
 VERIFY_HEADERS = {
     "accept": "*/*",
     "content-type": "application/json",
@@ -119,6 +122,10 @@ TARGETS: list[Target] = [
            site_key=GEETEST_ID, risk_type="voice"),
     Target("geetest-invisible-bind", "GeeTest V4 invisible-bind (ai)",
            "geetest", "geetest", site_key="99b142aaece96330d0f3ffb565ffb3ef"),
+
+    Target("lemin", "Lemin cropped (2captcha demo)", "lemin", "lemin",
+           site_key=LEMIN_ID, domain="https://2captcha.com",
+           verify_url=LEMIN_VERIFY_URL),
 ]
 
 GROUPS = {
@@ -127,6 +134,7 @@ GROUPS = {
     "arvancloud": [t.slug for t in TARGETS if t.group == "arvancloud"],
     "arcaptcha": [t.slug for t in TARGETS if t.group == "arcaptcha"],
     "geetest": [t.slug for t in TARGETS if t.group == "geetest"],
+    "lemin": [t.slug for t in TARGETS if t.group == "lemin"],
     "antibots": [t.slug for t in TARGETS
                  if t.runner_key == "interstitial" or t.group == "arvancloud"],
 }
@@ -309,6 +317,25 @@ async def run_geetest(_page: Any, target: Target) -> tuple[bool, str, float]:
     return ok, detail, bypass_s
 
 
+async def run_lemin(_page: Any, target: Target) -> tuple[bool, str, float]:
+    t0 = time.monotonic()
+    result = await lemin.asolve(
+        target.site_key, domain=target.domain, attempts=3,
+    )
+    bypass_s = time.monotonic() - t0
+
+    if not result.is_solved:
+        return False, "not solved", bypass_s
+    data = result.response_token
+    payload = {"answer": data["answer"], "challenge_id": data["challenge_id"]}
+    async with httpx.AsyncClient(timeout=30) as client:
+        r = await client.post(target.verify_url, headers=VERIFY_HEADERS, json=payload)
+    body = r.json()
+    ok = bool(body.get("success"))
+    detail = f"pv_token={data['pv_token'][:12]}"
+    return ok, detail, bypass_s
+
+
 RUNNERS: dict[str, Callable[..., Awaitable[tuple[bool, str, float]]]] = {
     "v2": run_v2,
     "v3": run_v3,
@@ -317,6 +344,7 @@ RUNNERS: dict[str, Callable[..., Awaitable[tuple[bool, str, float]]]] = {
     "arvancloud": run_arvancloud,
     "arcaptcha": run_arcaptcha,
     "geetest": run_geetest,
+    "lemin": run_lemin,
 }
 
 
