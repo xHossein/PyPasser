@@ -1,0 +1,77 @@
+site_name: PyPasser
+site_description: Free, open-source CAPTCHA solver and anti-bot bypass library for Python
+site_author: xHossein
+site_url: https://xhossein.github.io/PyPasser/
+repo_url: https://github.com/xHossein/PyPasser
+repo_name: xHossein/PyPasser
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets
+  - pymdownx.keys
+  - tables
+  - attr_list
+  - def_list
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quickstart: getting-started/quickstart.md
+  - CAPTCHA Solvers:
+      - Overview: solvers/index.md
+      - reCAPTCHA V3: solvers/recaptcha-v3.md
+      - reCAPTCHA V2: solvers/recaptcha-v2.md
+      - GeeTest V4: solvers/geetest-v4.md
+      - Lemin Cropped: solvers/lemin-cropped.md
+      - Cloudflare Turnstile: solvers/turnstile.md
+      - ARCaptcha: solvers/arcaptcha.md
+  - Anti-Bot Bypasses:
+      - Overview: antibots/index.md
+      - Cloudflare Interstitial: antibots/cloudflare.md
+      - ArvanCloud Interstitial: antibots/arvancloud.md
+  - API & Architecture:
+      - SolverResult: api/structs.md
+      - Exceptions: api/exceptions.md
+  - Benchmarks: benchmark.md
